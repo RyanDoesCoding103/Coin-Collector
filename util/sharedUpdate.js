@@ -59,4 +59,3 @@ function sharedUpdate(scene, player, coolDown, orcs, customLogic = () => {}) {
       }
     })
   }
-  // WE'RE FINISHING UP THE HURT ANIMATION FOR THE PLAYER, WE ADDED THE HEALTH BAR

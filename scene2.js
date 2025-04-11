@@ -243,15 +243,34 @@ class Scene2 extends Phaser.Scene {
                //PLAYER COLLISION WITH ORC
                 this.physics.add.collider(this.player, this.orcs, orcPlayerCollision, null, this)
                 function orcPlayerCollision(player, orc) {
+                        if (!(orc.anims.currentAnim && 
+                           (orc.anims.currentAnim.key === 'hurtOrc') && 
+                                orc.anims.isPlaying)) {
+                                        console.log(orc.health)
+                                        // We hurt the orc
+                                        //WORK ON ENEMENY BOUNCING OFF PLAYER
+                                orc.health = orc.health-1
+                                orc.anims.play('hurtOrc')
+                                if(orc.health <= 0) {
+                                        orc.anims.play('deadOrc');
+                                        orc.on("animationcomplete", ()=>{
+                                                this.orcs.remove(orc, true, true)
+                                                orc.destroy()
+                                        })
+                                }
+
+                        }
+                        
+                         
                         if (this.player.anims.currentAnim && 
-                                this.player.anims.currentAnim.key === 'attack' && 
+                                (player.anims.currentAnim.key === 'attack' || player.anims.currentAnim.key === 'hurt') && 
                                 this.player.anims.isPlaying) {
-                                // We kill the orc
-                                orc.disableBody(true, true);
+                               
                         } else {
                                 // Player takes damage
                                 this.playerHealth -= 20; // for example
                                 this.updateHealthBar();  // update the bar
+                                this.player.anims.play('hurt');
                         
                                 // Check if player is dead
                                 if (this.playerHealth <= 0) {
