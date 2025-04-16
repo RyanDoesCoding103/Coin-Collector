@@ -50,6 +50,13 @@ function sharedUpdate(scene, player, coolDown, orcs, customLogic = () => {}) {
       if (!orc.active){
         return
       }
+      // Position the bar background
+      orc.healthBarBG.x = orc.x - 15;  // shift half the width
+      orc.healthBarBG.y = orc.y + orc.healthBarOffsetY;
+
+      // Position the bar fill
+      orc.healthBarFill.x = orc.x - 15;
+      orc.healthBarFill.y = orc.y + orc.healthBarOffsetY;
       if(orc.body.blocked.left){
         orc.setVelocityX(200)
         orc.setFlipX(false)

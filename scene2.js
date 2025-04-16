@@ -136,6 +136,18 @@ class Scene2 extends Phaser.Scene {
                 orc.setCollideWorldBounds(true)
                 orc.setVelocityX(-200); // Random initial movement
                 orc.health = 3
+                // Create a graphics object for the health bar
+                let barWidth = 30;
+                let barHeight = 5;
+                orc.healthBarBG = this.add.graphics();
+                orc.healthBarBG.fillStyle(0x000000, 1).fillRect(0, 0, barWidth, barHeight);
+
+                orc.healthBarFill = this.add.graphics();
+                orc.healthBarFill.fillStyle(0xff0000, 1).fillRect(0, 0, barWidth, barHeight);
+
+                // Set an offset so it appears above the orc
+                orc.healthBarOffsetY = -20; // pixels above orc
+
           }); 
           this.physics.add.collider(this.orcs, this.platforms);
 
@@ -248,15 +260,31 @@ class Scene2 extends Phaser.Scene {
                                 orc.anims.isPlaying)) {
                                         console.log(orc.health)
                                         // We hurt the orc
-                                        //WORK ON ENEMENY BOUNCING OFF PLAYER
+                                let xDiff = orc.x - player.x;
+                                // if xDiff > 0, orc is to the right of the player, push orc further right, push player left
+                                if (xDiff > 0) {
+                                        orc.setVelocityX(200);
+                                        player.setVelocityX(-200);
+                                } else {
+                                        orc.setVelocityX(-200);
+                                        player.setVelocityX(200);
+                                }
                                 orc.health = orc.health-1
-                                orc.anims.play('hurtOrc')
-                                if(orc.health <= 0) {
-                                        orc.anims.play('deadOrc');
+                                let healthRatio = orc.health / 3; // if 3 is max
+                                orc.healthBarFill.clear();
+                                orc.healthBarFill.fillStyle(0xff0000, 1);
+                                orc.healthBarFill.fillRect(0, 0, 30 * healthRatio, 5);
+                                if (orc.health <= 0) {
+                                        orc.disableBody(true, true);
+                                        orc.healthBarBG.destroy();
+                                        orc.healthBarFill.destroy();
+                                        orc.anims.play('deadOrc'); // TODO: bugfix
                                         orc.on("animationcomplete", ()=>{
                                                 this.orcs.remove(orc, true, true)
                                                 orc.destroy()
                                         })
+                                }else {
+                                        orc.anims.play('hurtOrc')     
                                 }
 
                         }
@@ -355,13 +383,21 @@ class Scene2 extends Phaser.Scene {
           function orcProjectileCollision(projectile, orc){
                 projectile.destroy()
                 orc.health = orc.health-1
-                orc.anims.play('hurtOrc')
-                if(orc.health <= 0) {
-                        orc.anims.play('deadOrc');
+                let healthRatio = orc.health / 3; // if 3 is max
+                orc.healthBarFill.clear();
+                orc.healthBarFill.fillStyle(0xff0000, 1);
+                orc.healthBarFill.fillRect(0, 0, 30 * healthRatio, 5);
+                if (orc.health <= 0) {
+                        orc.disableBody(true, true);
+                        orc.healthBarBG.destroy();
+                        orc.healthBarFill.destroy();
+                        orc.anims.play('deadOrc'); // TODO: bugfix
                         orc.on("animationcomplete", ()=>{
                                 this.orcs.remove(orc, true, true)
                                 orc.destroy()
                         })
+                }else {
+                        orc.anims.play('hurtOrc')     
                 }
           } 
           this.updateHealthBar = function() {
