@@ -6,6 +6,11 @@ class Scene2 extends Phaser.Scene {
       }
   
       preload() {
+          this.load.audio('sfxSword', 'assets/swordSound.wav');
+          this.load.audio('sfxJump', 'assets/jump.wav');
+          this.load.audio('sfxBoom', 'assets/boom.wav');
+          this.load.audio('sfxHeart', 'assets/heart.mp3');
+          this.load.audio('sfxCoin', 'assets/coin.wav');
           this.load.image('sky', 'assets/sky.png');
           this.load.image('arrow', 'assets/projectile.png');
           this.load.image('ground', 'assets/platform.png');
@@ -54,6 +59,12 @@ class Scene2 extends Phaser.Scene {
       }
   
       create() {
+          //LOAD SOUNDS
+          this.sfxSword = this.sound.add('sfxSword', { volume: 0.6 });
+          this.sfxHeart = this.sound.add('sfxHeart', { volume: 0.7 });
+          this.sfxJump = this.sound.add('sfxJump', { volume: 0.5 });
+          this.sfxCoin = this.sound.add('sfxCoin', { volume: 0.5 });
+          this.sfxBoom = this.sound.add('sfxBoom', { volume: 0.6 });
           //CREATE THE GAME WORLD AND CONTROLS
           this.physics.world.setBounds(0, 0, 1600, 1200);
           this.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -150,6 +161,21 @@ class Scene2 extends Phaser.Scene {
 
           }); 
           this.physics.add.collider(this.orcs, this.platforms);
+          //ELITE ORC
+          this.eliteOrc = this.physics.add.sprite(800, 300,  {
+                            key: 'idleOrc',
+                            repeat: 10,
+                            setXY: { x: 500, y: 100, stepX: 300, stepY: 100 }
+                        });
+          this.eliteOrc.setScale(2);
+          this.eliteOrc.setTint(0xff0000); // Red color
+          this.eliteOrc.body.setGravityY(300);
+          this.eliteOrc.setCollideWorldBounds(true);
+          this.eliteOrc.health = 5; 
+          this.physics.add.collider(this.eliteOrc, this.platforms);
+          //this.createOrcHealthBar(this.eliteOrc, 5); // custom function
+          //this.eliteOrc.anims.play("walkOrc")
+
 
           //ORC ANIMATIONS
                 this.anims.create({
@@ -270,6 +296,8 @@ class Scene2 extends Phaser.Scene {
                                         player.setVelocityX(200);
                                 }
                                 orc.health = orc.health-1
+                                this.sfxHeart.play();
+                                     
                                 let healthRatio = orc.health / 3; // if 3 is max
                                 orc.healthBarFill.clear();
                                 orc.healthBarFill.fillStyle(0xff0000, 1);
@@ -308,7 +336,20 @@ class Scene2 extends Phaser.Scene {
                                 this.gameOver = true;
                                 }
                         }
-                 }       
+                 }    
+                 //ELITE ORC COLLISION WITH PLAYER
+                 this.physics.add.overlap(this.player, this.eliteOrc, (player, orc) => {
+                        // If player is attacking, damage orc
+                        if (player.anims.currentAnim && player.anims.currentAnim.key === 'attack') {
+                          orc.health--;
+                          // update orc health bar, etc.
+                        } else {
+                          // Damage player
+                          this.playerHealth -= 1;
+                          this.updateHealthBar();
+                        }
+                      }, null, this);
+                         
   
           //STARS
           this.stars = this.physics.add.group({
@@ -327,6 +368,7 @@ class Scene2 extends Phaser.Scene {
           function collectStar(player, star) {
               star.disableBody(true, true);
               score += 1;
+              this.sfxCoin.play(); 
               if (score >= 240) {
                   this.scene.start('Scene3', { score: score }); // Go to Scene3 
               }
@@ -364,6 +406,7 @@ class Scene2 extends Phaser.Scene {
                   
                 // Player takes damage
                 this.playerHealth -= 50; // for example
+                this.sfxBoom.play();
                 this.updateHealthBar();  // update the bar
     
                 // Check if player is dead
@@ -382,7 +425,9 @@ class Scene2 extends Phaser.Scene {
           //ORC & PROJECTLE COLLISION
           function orcProjectileCollision(projectile, orc){
                 projectile.destroy()
-                orc.health = orc.health-1
+                orc.health = orc.health-1;
+                this.sfxHeart.play();          
+
                 let healthRatio = orc.health / 3; // if 3 is max
                 orc.healthBarFill.clear();
                 orc.healthBarFill.fillStyle(0xff0000, 1);
@@ -416,6 +461,21 @@ class Scene2 extends Phaser.Scene {
           //JUMP BOOST
           var jumpBoost = this.physics.add.sprite(100, 100, "jumpBoost")
           this.physics.add.collider(jumpBoost, this.platforms);
+                this.time.addEvent({
+                        delay: 2000, // every 2 seconds
+                        loop: true,
+                        callback: () => {
+                        this.orcs.children.iterate((orc) => {
+                        // If orc is on the ground, jump with some probability
+                        if (orc.body.blocked.down) {
+                        let willJump = Phaser.Math.Between(0, 1);
+                        if (willJump === 1) {
+                                orc.setVelocityY(-400); // jump power
+                        }
+                        }
+                        });
+                        }
+                });
   
       }
       update() {

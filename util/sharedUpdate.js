@@ -27,8 +27,10 @@ function sharedUpdate(scene, player, coolDown, orcs, customLogic = () => {}) {
          player.anims.isPlaying)) {
         player.anims.play('attack', true);
         coolDown = scene.time.now + 1000;
+        scene.sfxSword.play();          //  ←  sound trigger
         scene.fireProjectile();
       }
+      
     } else {
       player.setVelocityX(0);
       
@@ -44,12 +46,14 @@ function sharedUpdate(scene, player, coolDown, orcs, customLogic = () => {}) {
   
     if (cursors.up.isDown && player.body.touching.down) {
       player.setVelocityY(-600);
+      scene.sfxJump.play(); 
     }
     // ORC MOVEMENT
     orcs.children.iterate((orc) => {
       if (!orc.active){
         return
       }
+      orc.anims.play('walkOrc', true);
       // Position the bar background
       orc.healthBarBG.x = orc.x - 15;  // shift half the width
       orc.healthBarBG.y = orc.y + orc.healthBarOffsetY;
@@ -65,4 +69,30 @@ function sharedUpdate(scene, player, coolDown, orcs, customLogic = () => {}) {
         orc.setFlipX(true)
       }
     })
+    //ELITE ORC
+        // At the bottom of update():
+    const distanceX = scene.player.x - scene.eliteOrc.x;
+    // If far from the player, move closer
+    if (Math.abs(distanceX) > 10) {
+      let speed = 100; // or 200, etc.
+      if (distanceX > 0) {
+        // Move right
+        scene.eliteOrc.setVelocityX(speed);
+        scene.eliteOrc.setFlipX(false);
+      } else {
+        // Move left
+        scene.eliteOrc.setVelocityX(-speed);
+        scene.eliteOrc.setFlipX(true);
+      }
+      scene.eliteOrc.anims.play('walkOrc', true);
+    } else {
+      // close enough, go idle or do an attack
+      scene.eliteOrc.setVelocityX(0);
+      scene.eliteOrc.anims.play('idleOrc', true);
+
+      // Possibly jump if the player is above the orc
+      if (scene.player.y < scene.eliteOrc.y - 50 && scene.eliteOrc.body.blocked.down) {
+        scene.eliteOrc.setVelocityY(-400);
+      }
+    }
   }
