@@ -70,6 +70,16 @@ function sharedUpdate(scene, player, coolDown, orcs, customLogic = () => {}) {
       }
     })
     //ELITE ORC
+    if (!scene.eliteOrc.active){
+      return
+    }
+    // Position the bar background
+    scene.eliteOrc.healthBarBG.x = scene.eliteOrc.x - 15;  // shift half the width
+    scene.eliteOrc.healthBarBG.y = scene.eliteOrc.y + scene.eliteOrc.healthBarOffsetY;
+
+    // Position the bar fill
+    scene.eliteOrc.healthBarFill.x = scene.eliteOrc.x - 15;
+    scene.eliteOrc.healthBarFill.y = scene.eliteOrc.y + scene.eliteOrc.healthBarOffsetY;
         // At the bottom of update():
     const distanceX = scene.player.x - scene.eliteOrc.x;
     // If far from the player, move closer
@@ -95,4 +105,24 @@ function sharedUpdate(scene, player, coolDown, orcs, customLogic = () => {}) {
         scene.eliteOrc.setVelocityY(-400);
       }
     }
+    // DRAGON MOVEMENT
+    scene.dragons.children.iterate((orc) => {
+      if (!orc.active){
+        return
+      }
+      // Position the bar background
+      orc.healthBarBG.x = orc.x - 15;  // shift half the width
+      orc.healthBarBG.y = orc.y + orc.healthBarOffsetY;
+
+      // Position the bar fill
+      orc.healthBarFill.x = orc.x - 15;
+      orc.healthBarFill.y = orc.y + orc.healthBarOffsetY;
+      // if(orc.body.blocked.left){
+      //   orc.setVelocityX(200)
+      //   orc.setFlipX(false)
+      // }else if(orc.body.blocked.right){
+      //   orc.setVelocityX(-200)
+      //   orc.setFlipX(true)
+      // }
+    })
   }
