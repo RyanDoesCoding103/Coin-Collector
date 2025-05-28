@@ -18,6 +18,10 @@ class Scene2 extends Phaser.Scene {
                 this.load.image('crumb', 'assets/crumblyPlatform.png');
 
                 this.load.image('star', 'assets/theStar.png');
+                this.load.image('coinMagnet', 'assets/coinMagnetPotion.png');
+                this.load.image('health', 'assets/healthPotion.png');
+                this.load.image('jump', 'assets/jumpPotion.png');
+                this.load.image('speed', 'assets/speedPotion.png');
                 //this.load.image('fireBall', 'assets/dragonFire.png');
                 this.load.image('jumpBoost', 'assets/star.png');
                 this.load.image('bomb', 'assets/bomb.png');
@@ -208,6 +212,32 @@ class Scene2 extends Phaser.Scene {
                 dragon.setCollideWorldBounds(true)
                 this.physics.add.collider(this.dragons, this.platforms);
 
+                this.potions = this.physics.add.group();
+                // Example: spawn one or multiple dragons
+                let coinMagnetPotion = this.potions.create(130, 350, 'coinMagnet');
+                let healthPotion = this.potions.create(150, 360, 'health');
+                let jumpPotion = this.potions.create(160, 370, 'jump');
+                let speedPotion = this.potions.create(170, 380, 'speed');
+                //potion.setScale(4);
+                coinMagnetPotion.body.setGravityY(0);   // maybe they fly
+                healthPotion.body.setGravityY(0);
+                jumpPotion.body.setGravityY(0);
+                speedPotion.body.setGravityY(0);
+                coinMagnetPotion.setCollideWorldBounds(true);
+                healthPotion.setCollideWorldBounds(true);
+                jumpPotion.setCollideWorldBounds(true);
+                speedPotion.setCollideWorldBounds(true);
+                this.physics.add.collider(this.potions, this.platforms);
+
+                this.applySpeedBoost = function() {
+                        // Increase movement speed to, say, 800
+                        this.playerSpeed = 800;
+                        // revert after 5 seconds
+                        this.time.delayedCall(5000, () => {
+                          this.playerSpeed = 500; 
+                        });
+                      };
+                
 
 
 
