@@ -12,11 +12,15 @@ class MainMenu extends Phaser.Scene {
       // for the sound on/off icon in the options panel
       this.load.image('iconSoundOn',  'assets/iconSoundOn.png');
       this.load.image('iconSoundOff', 'assets/iconSoundOff.png');
+      // for menu sounds
+      this.load.audio('musicMenu', 'assets/gameMenu.mp3');
     }
   
     create () {
       // 1) Background & title
       //this.add.image(400, 300, 'titleBG').setOrigin(0.5);
+      this.musicMenu = this.sound.add('musicMenu', { volume: 0.7, loop: true });
+      this.musicMenu.play();
   
       const titleText = this.add.text(400, 120, 'KING OF COINS', {
         fontSize: '48px',
@@ -27,6 +31,7 @@ class MainMenu extends Phaser.Scene {
       const startBtn = this.add.image(400, 250, 'btnStart').setInteractive();
       startBtn.setScale(0.1)
       startBtn.on('pointerup', () => {
+        this.musicMenu.stop();
         this.scene.start('Scene2');          // jump to your first level scene
       });
   

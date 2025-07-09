@@ -16,6 +16,7 @@ class Scene2 extends Phaser.Scene {
                 this.load.image('ground', 'assets/platform.png');
                 this.load.image('lava', 'assets/lavaPlatform.png');
                 this.load.image('crumb', 'assets/crumblyPlatform.png');
+                this.load.audio('music', 'assets/gameMusic.mp3');
 
                 this.load.image('star', 'assets/theStar.png');
                 this.load.image('coinMagnet', 'assets/coinMagnetPotion.png');
@@ -78,6 +79,8 @@ class Scene2 extends Phaser.Scene {
                 this.sfxJump = this.sound.add('sfxJump', { volume: 0.5 });
                 this.sfxCoin = this.sound.add('sfxCoin', { volume: 0.5 });
                 this.sfxBoom = this.sound.add('sfxBoom', { volume: 0.6 });
+                this.music = this.sound.add('music', { volume: 0.7, loop: true });
+                this.music.play();
                 //CREATE THE GAME WORLD AND CONTROLS
                 this.physics.world.setBounds(0, 0, 1600, 1200);
                 this.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -229,6 +232,15 @@ class Scene2 extends Phaser.Scene {
                 speedPotion.setCollideWorldBounds(true);
                 this.physics.add.collider(this.potions, this.platforms);
 
+                // this.physics.add.overlap(
+                //         this.player,
+                //         this.potions,
+                //         this.applySpeedBoost, 
+                //         null, 
+                //         this
+                //       );
+
+                      
                 this.applySpeedBoost = function() {
                         // Increase movement speed to, say, 800
                         this.playerSpeed = 800;
@@ -579,9 +591,10 @@ class Scene2 extends Phaser.Scene {
                 //COLLECTING STARS
                 function collectStar(player, star) {
                         star.disableBody(true, true);
-                        score += 1;
+                        score += 100;
                         this.sfxCoin.play();
                         if (score >= 240) {
+                                this.music.stop();
                                 this.scene.start('Scene3', { score: score }); // Go to Scene3 
                         }
                         scoreText.setText('Score: ' + score);
