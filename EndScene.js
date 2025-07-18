@@ -14,12 +14,16 @@ class EndScene extends Phaser.Scene {
       this.load.image('iconSoundOff', 'assets/iconSoundOff.png');
       // for menu sounds
       this.load.audio('musicMenu', 'assets/gameMenu.mp3');
+      //Jingle_Lose_00.wav by LittleRobotSoundFactory -- https://freesound.org/s/270329/ -- License: Attribution 4.0
+      this.load.audio('lose', 'assets/loseMusic.wav');
     }
   
     create () {
       // 1) Background & title
       //this.add.image(400, 300, 'titleBG').setOrigin(0.5);
-      this.musicMenu = this.sound.add('musicMenu', { volume: 0.7, loop: true });
+      this.lose = this.sound.add('lose', { volume: 0.8 });
+      this.lose.play();
+      this.musicMenu = this.sound.add('musicMenu', { volume: 0.5, loop: true });
       this.musicMenu.play();
   
       const titleText = this.add.text(400, 120, 'Game Over', {
