@@ -11,7 +11,7 @@ const config = {
       gravity: {
         y: 550,
       },
-      debug: true,
+      debug: false,
     },
   },
   scene: [MainMenu, Scene2, Scene3, Scene4, EndScene]

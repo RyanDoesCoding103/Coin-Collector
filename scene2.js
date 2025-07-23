@@ -79,7 +79,7 @@ class Scene2 extends Phaser.Scene {
                 this.sfxJump = this.sound.add('sfxJump', { volume: 0.5 });
                 this.sfxCoin = this.sound.add('sfxCoin', { volume: 0.5 });
                 this.sfxBoom = this.sound.add('sfxBoom', { volume: 0.6 });
-                this.music = this.sound.add('music', { volume: 0.7, loop: true });
+                this.music = this.sound.add('music', { volume: 0.6, loop: true });
                 this.music.play();
                 //CREATE THE GAME WORLD AND CONTROLS
                 this.physics.world.setBounds(0, 0, 1600, 1200);
@@ -591,7 +591,7 @@ class Scene2 extends Phaser.Scene {
                 //COLLECTING STARS
                 function collectStar(player, star) {
                         star.disableBody(true, true);
-                        score += 100;
+                        score += 10;
                         this.sfxCoin.play();
                         if (score >= 240) {
                                 this.music.stop();
